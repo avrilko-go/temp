@@ -1,0 +1,42 @@
+version: "3"
+
+services:
+  php8:
+    build:
+      context: "./source/php8"
+    volumes:
+      - ./web/:/web:rw
+    ports:
+      - 9000:9000
+    networks:
+      - my-net
+    restart: always
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456"
+    ports:
+      - 3306:3306
+    volumes:
+      - ./app/mysql/data:/var/lib/mysql:rw
+    restart: always
+    networks:
+      - my-net
+
+  nginx:
+    build:
+      context: './source/nginx'
+    volumes:
+      - ./web:/web:rw
+      - ./app/nginx/config/conf.d:/etc/nginx/conf.d:rw
+      - ./app/nginx/config/nginx.conf:/etc/nginx/nginx.conf:rw
+      - ./app/nginx/log:/var/log/nginx:rw
+    ports:
+      - 80:80
+    restart: always
+    networks:
+      - my-net
+
+networks:
+  my-net:
